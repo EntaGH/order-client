@@ -1,0 +1,11 @@
+﻿@page "/order"
+
+<h3>Order</h3>
+
+@if (Orders is not null)
+{
+    @foreach (var order in Orders!)
+    {
+        <a>@order.Id</a><br />
+    }
+}
