@@ -1,0 +1,42 @@
+﻿@using Client.Pages.Orders.Models;
+
+@if (!Orders.Any())
+{
+    <div class="alert alert-info">
+        No orders found.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Id</th>
+                    <th>Total</th>
+                    <th>Customer ID</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var order in Orders)
+                {
+                    <tr>
+                        <td>@order.Id</td>
+                        <td>@order.Total</td>
+                        <td>@order.CustomerId</td>
+                        <td>@order.Status</td>
+                        <td>@order.CreatedAt</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<Order> Orders { get; set; } = [];
+}

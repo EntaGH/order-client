@@ -1,0 +1,23 @@
+﻿<div class="order-search">
+    <input
+        type="text"
+        class="form-control"
+        placeholder="Customer ID"
+        value="@CustomerId"
+        @oninput="HandleInput" />
+</div>
+
+@code {
+    [Parameter]
+    public string CustomerId { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> OnSearchChanged { get; set; }
+
+    private async Task HandleInput(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString() ?? string.Empty;
+
+        await OnSearchChanged.InvokeAsync(value);
+    }
+}

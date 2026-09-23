@@ -1,11 +1,41 @@
 ﻿@page "/order"
+@using Client.Pages.Orders.Components
 
-<h3>Order</h3>
+<PageTitle>Orders</PageTitle>
 
-@if (Orders is not null)
-{
-    @foreach (var order in Orders!)
+<div class="container-fluid">
+    <div class="order-header">
+        <h3>Orders</h3>
+
+        <OrderSearch
+            CustomerId="@CustomerId"
+            OnSearchChanged="OnSearchChangedAsync" />
+    </div>
+
+    @if (_isLoading)
     {
-        <a>@order.Id</a><br />
+        <div class="d-flex justify-content-center my-4">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">
+                    Loading...
+                </span>
+            </div>
+        </div>
     }
-}
+    else if (!string.IsNullOrWhiteSpace(_message))
+    {
+        <div class="alert alert-danger" role="alert">
+            @_message
+        </div>
+    }
+    else
+    {
+        <OrderTable Orders="@_orders" />
+
+        <OrderPagination
+            PageInfo="@_pageInfo"
+            IsLoading="@_isLoading"
+            OnPrevious="PreviousPageAsync"
+            OnNext="NextPageAsync" />
+    }
+</div>

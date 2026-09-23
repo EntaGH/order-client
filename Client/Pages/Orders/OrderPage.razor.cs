@@ -10,41 +10,102 @@ public partial class OrderPage
 {
     private const int PageSize = 10;
 
-    public string? Message { get; set; }
-    public IEnumerable<Order>? Orders { get; set; } = [];
-    public PageInfo? PageInfo { get; set; }
-
     [Parameter]
     public int Page { get; set; } = 1;
 
+    [Parameter]
+    public string CustomerId { get; set; } = string.Empty;
+
     [Inject]
-    IOrderService _orderService { get; set; } = default!;
+    private IOrderService _orderService { get; set; } = default!;
+
+    private IEnumerable<Order> _orders { get; set; } = [];
+
+    private PageInfo? _pageInfo { get; set; }
+
+    private string? _message { get; set; }
+
+    private bool _isLoading { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-
-        await GetOrders();
+        await LoadOrdersAsync();
     }
 
-    private async Task GetOrders()
+    private async Task OnSearchChangedAsync(string customerId)
     {
-        var queryContainer = new QueryContainer()
-        {
-            Current = Page,
-            PageSize = PageSize,
+        CustomerId = customerId;
+        Page = 1;
 
-        };
+        await LoadOrdersAsync();
+    }
 
-        var result = await _orderService.GetAsync(queryContainer, "");
-        if (result.StatusCode == HttpStatusCode.OK)
+    private async Task NextPageAsync()
+    {
+        if (_pageInfo is null || !_pageInfo.HasNext)
         {
-            Orders = result.SuccessResult!.Data?.PagedData;
-            Message = result.SuccessResult!.Message;
             return;
         }
 
-        Message = result.ErrorResult!.Message;
+        Page++;
+
+        await LoadOrdersAsync();
     }
 
+    private async Task PreviousPageAsync()
+    {
+        if (_pageInfo is null || !_pageInfo.HasPrevious)
+        {
+            return;
+        }
+
+        Page--;
+
+        await LoadOrdersAsync();
+    }
+
+    private async Task LoadOrdersAsync()
+    {
+        _isLoading = true;
+        _message = null;
+
+        try
+        {
+            var query = new QueryContainer
+            {
+                Current = Page,
+                PageSize = PageSize
+            };
+
+            var result = await _orderService.GetAsync(
+                query,
+                CustomerId);
+
+            if (result.StatusCode != HttpStatusCode.OK)
+            {
+                _orders = [];
+                _pageInfo = null;
+
+                _message = result.ErrorResult?.Message ?? "Failed to load orders.";
+
+                return;
+            }
+
+            var data = result.SuccessResult?.Data;
+
+            _orders = data?.PagedData ?? [];
+            _pageInfo = data?.PageInfo;
+            _message = result.SuccessResult?.Message;
+        }
+        catch (Exception ex)
+        {
+            _orders = [];
+            _pageInfo = null;
+            _message = ex.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
 }
