@@ -1,0 +1,76 @@
+﻿@page "/stock-items/create"
+
+<PageTitle>Create Stock Item</PageTitle>
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Create Stock Item</h3>
+
+        <a
+            href="/stock-items"
+            class="btn btn-outline-secondary">
+            Back
+        </a>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_message))
+    {
+        <div class="alert alert-danger">
+            @_message
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label for="sku" class="form-label">
+                    SKU
+                </label>
+
+                <input
+                    id="sku"
+                    class="form-control"
+                    @bind="_request.Sku"
+                    disabled="@_isLoading" />
+            </div>
+
+            <div class="mb-3">
+                <label for="quantityOnHand" class="form-label">
+                    Quantity On Hand
+                </label>
+
+                <input
+                    id="quantityOnHand"
+                    type="number"
+                    class="form-control"
+                    @bind="_request.QuantityOnHand"
+                    disabled="@_isLoading" />
+            </div>
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                @onclick="CreateAsync"
+                disabled="@_isLoading">
+
+                @if (_isLoading)
+                {
+                    <span
+                        class="spinner-border spinner-border-sm me-2"
+                        role="status">
+                    </span>
+
+                    <span>Creating...</span>
+                }
+                else
+                {
+                    <span>Create</span>
+                }
+
+            </button>
+
+        </div>
+    </div>
+</div>

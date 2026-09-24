@@ -62,7 +62,7 @@ public class OrderService : IOrderService
 
     public async Task<ResultWrapper<Order>> GetByIdAsync(Guid id)
     {
-        var response = await _httpClient.GetAsync($"{_httpClientSettings.ApiBaseUrl}{Endpoint}/{id}");
+        var response = await _httpClient.GetAsync($"{_httpClientSettings.OrderBaseUrl}{Endpoint}/{id}");
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
@@ -84,7 +84,7 @@ public class OrderService : IOrderService
     public async Task<ResultWrapper<Order>> CreateAsync(CreateOrderRequest request)
     {
         var response = await _httpClient.PostAsJsonAsync(
-            $"{_httpClientSettings.ApiBaseUrl}{Endpoint}",
+            $"{_httpClientSettings.OrderBaseUrl}{Endpoint}",
             request);
 
         if (response.StatusCode == HttpStatusCode.Accepted)
@@ -108,7 +108,7 @@ public class OrderService : IOrderService
     public async Task<ResultWrapper<object>> RequestPaymentAsync(Guid id)
     {
         var response = await _httpClient.PostAsync(
-            $"{_httpClientSettings.ApiBaseUrl}{Endpoint}/{id}/RequestPayment",
+            $"{_httpClientSettings.OrderBaseUrl}{Endpoint}/{id}/RequestPayment",
             null);
 
         if (response.IsSuccessStatusCode)
@@ -130,7 +130,7 @@ public class OrderService : IOrderService
     private string QueryBuilder(QueryContainer query, string? customerId)
     {
         return
-            $"{_httpClientSettings.ApiBaseUrl}{Endpoint}?" +
+            $"{_httpClientSettings.OrderBaseUrl}{Endpoint}?" +
             $"{CustomerId}={customerId}&" +
             $"{PageSize}={query.PageSize}&" +
             $"{Current}={query.Current}";

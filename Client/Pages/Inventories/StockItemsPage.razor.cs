@@ -1,43 +1,42 @@
 using Client.Infrastructure.Extensions;
-using Client.Pages.Orders.Models;
-using Client.Pages.Orders.Services;
+using Client.Pages.Inventories.Models;
+using Client.Pages.Inventories.Services;
 using Microsoft.AspNetCore.Components;
 using System.Net;
 
-namespace Client.Pages.Orders;
+namespace Client.Pages.Inventories;
 
-public partial class OrderPage
+public partial class StockItemsPage
 {
     private const int PageSize = 10;
 
     [Parameter]
     public int Page { get; set; } = 1;
 
-    [Parameter]
-    public string CustomerId { get; set; } = string.Empty;
-
     [Inject]
-    private IOrderService _orderService { get; set; } = default!;
+    private IInventoryService _InventoryService { get; set; } = default!;
 
-    private IEnumerable<Order> _orders { get; set; } = [];
+    private IEnumerable<StockItem> _stockItems { get; set; } = [];
 
     private PageInfo? _pageInfo { get; set; }
 
     private string? _message { get; set; }
 
+    private string _sku { get; set; } = string.Empty;
+
     private bool _isLoading { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadOrdersAsync();
+        await LoadStockItemsAsync();
     }
 
-    private async Task OnSearchChangedAsync(string customerId)
+    private async Task SearchAsync(string sku)
     {
-        CustomerId = customerId;
+        _sku = sku;
         Page = 1;
 
-        await LoadOrdersAsync();
+        await LoadStockItemsAsync();
     }
 
     private async Task NextPageAsync()
@@ -49,7 +48,7 @@ public partial class OrderPage
 
         Page++;
 
-        await LoadOrdersAsync();
+        await LoadStockItemsAsync();
     }
 
     private async Task PreviousPageAsync()
@@ -61,10 +60,10 @@ public partial class OrderPage
 
         Page--;
 
-        await LoadOrdersAsync();
+        await LoadStockItemsAsync();
     }
 
-    private async Task LoadOrdersAsync()
+    private async Task LoadStockItemsAsync()
     {
         _isLoading = true;
         _message = null;
@@ -77,28 +76,29 @@ public partial class OrderPage
                 PageSize = PageSize
             };
 
-            var result = await _orderService.GetAsync(query, CustomerId);
+            var result = await _InventoryService.GetAsync(query, _sku);
 
             if (result.StatusCode != HttpStatusCode.OK)
             {
-                _orders = [];
+                _stockItems = [];
                 _pageInfo = null;
 
-                _message = result.ErrorResult?.Message ?? "Failed to load orders.";
+                _message = result.ErrorResult?.Message ?? "Failed to load stock items.";
 
                 return;
             }
 
             var data = result.SuccessResult?.Data;
 
-            _orders = data?.PagedData ?? [];
+            _stockItems = data?.PagedData ?? [];
             _pageInfo = data?.PageInfo;
             _message = result.SuccessResult?.Message;
         }
         catch (Exception ex)
         {
-            _orders = [];
+            _stockItems = [];
             _pageInfo = null;
+
             _message = ex.Message;
         }
         finally

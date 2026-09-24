@@ -1,0 +1,55 @@
+﻿@using Client.Pages.Inventories.Models;
+@using Client.Infrastructure.Extensions;
+
+@if (PageInfo is not null)
+{
+    <div class="d-flex justify-content-end align-items-center gap-2 mt-3">
+
+        <button
+            type="button"
+            class="btn btn-outline-primary"
+            disabled="@(!PageInfo.HasPrevious || IsLoading)"
+            @onclick="OnPreviousAsync">
+            Previous
+        </button>
+
+        <span>
+            Page @PageInfo.Current of @PageInfo.TotalPages
+        </span>
+
+        <button
+            type="button"
+            class="btn btn-outline-primary"
+            disabled="@(!PageInfo.HasNext || IsLoading)"
+            @onclick="OnNextAsync">
+            Next
+        </button>
+
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public PageInfo? PageInfo { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public EventCallback OnPrevious { get; set; }
+
+    [Parameter]
+    public EventCallback OnNext { get; set; }
+
+    private async Task OnPreviousAsync()
+    {
+        await OnPrevious.InvokeAsync();
+    }
+
+    private async Task OnNextAsync()
+    {
+        await OnNext.InvokeAsync();
+    }
+
+}

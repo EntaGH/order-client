@@ -1,0 +1,72 @@
+﻿@using Client.Pages.Inventories.Models;
+
+<div class="card mb-4">
+    <div class="card-body">
+
+        <div class="row align-items-end">
+
+            <div class="col-md-6">
+                <label for="sku" class="form-label">
+                    SKU
+                </label>
+
+                <input
+                    id="sku"
+                    class="form-control"
+                    value="@Sku"
+                    @oninput="OnInput"
+                    @onkeydown="OnKeyDown" />
+            </div>
+
+            <div class="col-md-2">
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    @onclick="SearchAsync"
+                    disabled="@IsLoading">
+
+                    Search
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Sku { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnSearch { get; set; }
+
+    private string _value = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        _value = Sku;
+    }
+
+    private void OnInput(ChangeEventArgs e)
+    {
+        _value = e.Value?.ToString() ?? string.Empty;
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchAsync();
+        }
+    }
+
+    private async Task SearchAsync()
+    {
+        await OnSearch.InvokeAsync(_value);
+    }
+}

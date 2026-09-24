@@ -1,0 +1,47 @@
+﻿@page "/stock-items"
+@using Client.Pages.Inventories.Components;
+
+<PageTitle>Stock Items</PageTitle>
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>Stock Items</h3>
+
+    <a
+        href="/stock-items/create"
+        class="btn btn-primary">
+        Create Stock Item
+    </a>
+</div>
+
+    <StockItemSearch
+        Sku="@_sku"
+        IsLoading="@_isLoading"
+        OnSearch="SearchAsync" />
+
+    @if (!string.IsNullOrEmpty(_message))
+    {
+        <div class="alert alert-danger">
+            @_message
+        </div>
+    }
+
+    <StockItemTable
+        Items="_stockItems"
+        IsLoading="_isLoading" />
+
+    @if (_pageInfo is not null)
+    {
+        <div class="d-flex justify-content-end align-items-center mt-3">
+
+        <StockItemPagination
+            PageInfo="@_pageInfo"
+            IsLoading="@_isLoading"
+            OnPrevious="PreviousPageAsync"
+            OnNext="NextPageAsync" />
+
+    </div>
+    }
+
+</div>
