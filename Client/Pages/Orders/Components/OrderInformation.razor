@@ -1,0 +1,77 @@
+﻿@using Client.Pages.Orders.Models
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Order Information</h5>
+
+        <button
+            type="button"
+            class="btn btn-primary"
+            @onclick="HandleRequestPaymentAsync"
+            disabled="@IsRequestingPayment">
+
+            @if (IsRequestingPayment)
+            {
+                <span>Requesting...</span>
+            }
+            else
+            {
+                <span>Request Payment</span>
+            }
+        </button>
+    </div>
+
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <strong>Order ID:</strong>
+                <div>@Order.Id</div>
+            </div>
+
+            <div class="col-md-6">
+                <strong>Customer ID:</strong>
+                <div>@Order.CustomerId</div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <strong>Status:</strong>
+                <div>@Order.Status</div>
+            </div>
+
+            <div class="col-md-6">
+                <strong>Total:</strong>
+                <div>@Order.Total.ToString("N2")</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <strong>Created At:</strong>
+                <div>@Order.CreatedAt</div>
+            </div>
+
+            <div class="col-md-6">
+                <strong>Updated At:</strong>
+                <div>@Order.UpdatedAt</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Order Order { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback OnRequestPayment { get; set; }
+
+    [Parameter]
+    public bool IsRequestingPayment { get; set; }
+
+    private async Task HandleRequestPaymentAsync()
+    {
+        await OnRequestPayment.InvokeAsync();
+    }
+}

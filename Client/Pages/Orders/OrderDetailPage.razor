@@ -1,0 +1,36 @@
+﻿@page "/orders/{Id:guid}"
+@using Client.Pages.Orders.Components
+
+<PageTitle>Order Details</PageTitle>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Order Details</h2>
+
+        <a href="/orders" class="btn btn-secondary">
+            Back
+        </a>
+    </div>
+
+    @if (_isLoading)
+    {
+        <div class="text-center">
+            <span>Loading...</span>
+        </div>
+    }
+    else if (_order is null)
+    {
+        <div class="alert alert-danger">
+            @_message
+        </div>
+    }
+    else
+    {
+        <OrderInformation
+            Order="_order"
+            IsRequestingPayment="_isRequestingPayment"
+            OnRequestPayment="RequestPaymentAsync" />
+
+        <OrderLines OrderLineList="_order.OrderLines" />
+    }
+</div>

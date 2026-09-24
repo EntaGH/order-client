@@ -24,7 +24,7 @@ else
                 @foreach (var order in Orders)
                 {
                     <tr>
-                        <td>@order.Id</td>
+                        <td><a href="/orders/{@order.Id}">@order.Id</a></td>
                         <td>@order.Total</td>
                         <td>@order.CustomerId</td>
                         <td>@order.Status</td>
